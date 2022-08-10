@@ -1,0 +1,38 @@
+{
+  "name": "Your Collection #1",
+  "description": "Remember to replace this description",
+  "image": "ipfs://NewUriToReplace/1.png",
+  "dna": "5ffb6c91573fa266c44df00c191e4a999d0b6022",
+  "edition": 1,
+  "date": 1660130587913,
+  "attributes": [
+    {
+      "trait_type": "Part 1",
+      "value": "1"
+    },
+    {
+      "trait_type": "Part 2",
+      "value": "1"
+    },
+    {
+      "trait_type": "Part 3",
+      "value": "1"
+    },
+    {
+      "trait_type": "Part 4",
+      "value": "1"
+    },
+    {
+      "trait_type": "Part 5",
+      "value": "1"
+    },
+    {
+      "trait_type": "Part 6",
+      "value": "1"
+    },
+    {
+      "trait_type": "Part 7",
+      "value": "1"
+    }
+  ]
+}
