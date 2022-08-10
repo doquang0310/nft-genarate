@@ -98,14 +98,12 @@ genNft.process(async (job, done) => {
             growEditionSizeTo: 20,
             layersOrder: layerOrder,
         },
-    ], `${buildDir}/images`, `${buildDir}/json`, layersDir, req.idCollection);
-    console.log(job.data.idCollection)
+    ], `${buildDir}/images`, `${buildDir}/json`, layersDir,req.body);
+
     await CollectionService.updateStatus(job.data.idCollection,2)
 })
 
 genNft.on('succeeded', (job, result) => {
-    console.log(job.data.idCollection)
-
     CollectionService.updateStatus(job.data.idCollection,3)
 });
 

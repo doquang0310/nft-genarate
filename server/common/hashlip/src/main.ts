@@ -15,12 +15,12 @@ import {
   extraMetadata,
   text,
   namePrefix,
-} from "./config"
+} from "./config";
 
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = format.smoothing;
-var metadataList = [];
+
 const DNA_DELIMITER = "-";
 
 const getRarityWeight = (_str) => {
@@ -106,11 +106,11 @@ const drawBackground = () => {
   ctx.fillRect(0, 0, format.width, format.height);
 };
 
-const addMetadata = (_dna, _edition, attributesList, metadataDir,idCollection) => {
+const addMetadata = (_dna, _edition, attributesList, metadataDir,data) => {
   let dateTime = Date.now();
   let tempMetadata = {
-    name: `${namePrefix} #${_edition}`,
-    description: description,
+    name: `${data.name} #${_edition}`,
+    description: data.description,
     image: `${baseUri}/${_edition}.png`,
     dna: sha1(_dna),
     edition: _edition,
@@ -123,7 +123,7 @@ const addMetadata = (_dna, _edition, attributesList, metadataDir,idCollection) =
     JSON.stringify(tempMetadata, null, 2)
   );
   let dataToSave = {
-    idCollections: idCollection,
+    idCollections: data.idCollection,
     idNft: _edition,
     data: JSON.stringify(tempMetadata),
   };
@@ -282,7 +282,7 @@ const startCreating = async (
   saveImageDir,
   saveMetadataDir,
   layersDir,
-  idCollection
+  data
 ) => {
   var dnaList = new Set();
   let layerConfigIndex = 0;
@@ -290,6 +290,7 @@ const startCreating = async (
   let failedCount = 0;
   let abstractedIndexes = [];
   let attributesList = [];
+  let idCollection = data.idCollection
 
   for (
     let i = 1;
@@ -340,7 +341,7 @@ const startCreating = async (
             abstractedIndexes[0],
             attributesList,
             saveMetadataDir,
-            idCollection
+            data
           );
           // saveMetaDataSingleFile(abstractedIndexes[0], saveMetadataDir);
         });
@@ -357,7 +358,6 @@ const startCreating = async (
     }
     layerConfigIndex++;
   }
-  writeMetaData(JSON.stringify(metadataList, null, 2), saveMetadataDir);
 };
 
 module.exports = { startCreating, getElements };
