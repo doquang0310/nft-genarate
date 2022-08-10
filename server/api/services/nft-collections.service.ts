@@ -12,7 +12,7 @@ export class NftCollectionService {
     return example;
   }
 
-  async create(data: NftModel): Promise<NftModel> {
+  async create(data){
     l.info(`create example with data ${data}`);
     const example = new NftSchema(data);
     const doc = (await example.save()) as NftModel;

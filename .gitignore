@@ -11,3 +11,5 @@ node_modules
 
 # Mocha test results
 test/test-results.xml
+
+storage
