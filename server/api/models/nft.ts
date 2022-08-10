@@ -9,7 +9,7 @@ export interface NftModel extends mongoose.Document {
   data: string;
 }
 
-const schema = new mongoose.Schema(
+const schemaNfts = new mongoose.Schema(
   {
     id: { type: Number, unique: true },
     idCollections: { type: Number },
@@ -17,10 +17,11 @@ const schema = new mongoose.Schema(
     data: { type: String },
   },
   {
-    collection: "nft_collections",
+    collection: "nfts",
   }
 );
 
-schema.plugin(AutoIncrement, { inc_field: "id" });
+schemaNfts.plugin(AutoIncrement, { inc_field: "id" });
 
-export const NftSchema = mongoose.model<NftModel>("NftSchema", schema);
+export const NftSchema = mongoose.model<NftModel>("NftSchema", schemaNfts);
+

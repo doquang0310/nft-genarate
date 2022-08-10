@@ -1,6 +1,6 @@
 import sha1 from "sha1";
 import { createCanvas, loadImage } from "canvas";
-import NftCollectionService from "../../../api/services/nft-collections.service"
+import NftCollectionService from "../../../api/services/nft.service"
 import fs from "fs";
 
 import {
@@ -106,7 +106,7 @@ const drawBackground = () => {
   ctx.fillRect(0, 0, format.width, format.height);
 };
 
-const addMetadata = (_dna, _edition, attributesList, metadataDir) => {
+const addMetadata = (_dna, _edition, attributesList, metadataDir,idCollection) => {
   let dateTime = Date.now();
   let tempMetadata = {
     name: `${namePrefix} #${_edition}`,
@@ -123,8 +123,8 @@ const addMetadata = (_dna, _edition, attributesList, metadataDir) => {
     JSON.stringify(tempMetadata, null, 2)
   );
   let dataToSave = {
-    idCollections: 1,
-    idNft: 1,
+    idCollections: idCollection,
+    idNft: _edition,
     data: JSON.stringify(tempMetadata),
   };
   NftCollectionService.create(dataToSave)
@@ -281,7 +281,8 @@ const startCreating = async (
   layerConfigParams,
   saveImageDir,
   saveMetadataDir,
-  layersDir
+  layersDir,
+  idCollection
 ) => {
   var dnaList = new Set();
   let layerConfigIndex = 0;
@@ -338,7 +339,8 @@ const startCreating = async (
             newDna,
             abstractedIndexes[0],
             attributesList,
-            saveMetadataDir
+            saveMetadataDir,
+            idCollection
           );
           // saveMetaDataSingleFile(abstractedIndexes[0], saveMetadataDir);
         });
@@ -347,7 +349,6 @@ const startCreating = async (
         editionCount++;
         abstractedIndexes.shift();
       } else {
-        console.log("DNA exists!");
         failedCount++;
         if (failedCount >= uniqueDnaTorrance) {
           break;

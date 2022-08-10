@@ -1,15 +1,15 @@
 import l from "../../common/logger";
 
-import { NftSchema, NftModel } from "../models/nft-collections";
+import { NftSchema, NftModel } from "../models/nft";
 
-export class NftCollectionService {
+export class NftService {
   async getByIdCollection(id: number): Promise<NftModel> {
     l.info(`fetch example with id ${id}`);
-    const example = (await NftSchema.findOne(
+    const data = (await NftSchema.findOne(
       { idCollections: id },
       "-_id -__v"
     ).lean()) as NftModel;
-    return example;
+    return data;
   }
 
   async create(data){
@@ -20,4 +20,4 @@ export class NftCollectionService {
   }
 }
 
-export default new NftCollectionService();
+export default new NftService();

@@ -1,6 +1,6 @@
 const Queue = require('bee-queue');
 const fs = require("fs");
-
+import CollectionService from "../api/services/collection.service"
 const basePath = process.cwd();
 
 const { startCreating } = require(`${basePath}/server/common/hashlip/src/main`);
@@ -98,11 +98,15 @@ genNft.process(async (job, done) => {
             growEditionSizeTo: 20,
             layersOrder: layerOrder,
         },
-    ], `${buildDir}/images`, `${buildDir}/json`, layersDir);
+    ], `${buildDir}/images`, `${buildDir}/json`, layersDir, req.idCollection);
+    console.log(job.data.idCollection)
+    await CollectionService.updateStatus(job.data.idCollection,2)
 })
 
 genNft.on('succeeded', (job, result) => {
-    console.log(job)
+    console.log(job.data.idCollection)
+
+    CollectionService.updateStatus(job.data.idCollection,3)
 });
 
 

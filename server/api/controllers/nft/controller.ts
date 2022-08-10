@@ -1,4 +1,4 @@
-import ExamplesService from "../../services/nft-collections.service";
+import ExamplesService from "../../services/nft.service";
 import { Request, Response, NextFunction } from "express";
 import { genNftOrder } from "../../../queue/nftGen";
 export class Controller {
