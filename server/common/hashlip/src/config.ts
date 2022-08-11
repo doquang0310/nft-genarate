@@ -1,12 +1,3 @@
-const basePath = process.cwd();
-
-const network = "eth";
-
-// General metadata for Ethereum
-const namePrefix = "Your Collection";
-const description = "Remember to replace this description";
-const baseUri = "ipfs://NewUriToReplace";
-
 const solanaMetadata = {
   symbol: "YC",
   seller_fee_basis_points: 1000, // Define how much % you want from secondary market sales 1000 = 10%
@@ -39,12 +30,6 @@ const layerConfigurations = [
 const shuffleLayerConfigurations = false;
 
 const debugLogs = false;
-
-const format = {
-  width: 1080,
-  height: 1920,
-  smoothing: false,
-};
 
 const gif = {
   export: false,
@@ -83,12 +68,7 @@ const rarityDelimiter = "#";
 
 const uniqueDnaTorrance = 10000;
 
-const preview = {
-  thumbPerRow: 5,
-  thumbWidth: 50,
-  imageRatio: format.height / format.width,
-  imageName: "preview.png",
-};
+
 
 const preview_gif = {
   numberOfImages: 5,
@@ -100,21 +80,15 @@ const preview_gif = {
 };
 
 export {
-  format,
-  baseUri,
-  description,
   background,
   uniqueDnaTorrance,
   layerConfigurations,
   rarityDelimiter,
-  preview,
   shuffleLayerConfigurations,
   debugLogs,
   extraMetadata,
   pixelFormat,
   text,
-  namePrefix,
-  network,
   solanaMetadata,
   gif,
   preview_gif,

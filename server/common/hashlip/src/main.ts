@@ -1,27 +1,32 @@
 import sha1 from "sha1";
-import { createCanvas, loadImage } from "canvas";
-import NftCollectionService from "../../../api/services/nft.service"
 import fs from "fs";
+import { createCanvas, loadImage } from "canvas";
+import { create } from "ipfs-http-client";
+import NftCollectionService from "../../../api/services/nft.service";
 
 import {
-  format,
-  baseUri,
-  description,
   background,
   uniqueDnaTorrance,
   rarityDelimiter,
   shuffleLayerConfigurations,
   debugLogs,
   extraMetadata,
-  text,
-  namePrefix,
 } from "./config";
 
-const canvas = createCanvas(format.width, format.height);
-const ctx = canvas.getContext("2d");
-ctx.imageSmoothingEnabled = format.smoothing;
-
 const DNA_DELIMITER = "-";
+const auth =
+  "Basic " +
+  Buffer.from(
+    "2DC8ena3tD5OwEQd8lhce7rqqEF" + ":" + "e75aa2b9e48ece376b841ba107875678",
+    "utf8"
+  ).toString("base64");
+const client = create({
+  host: "ipfs.infura.io",
+  port: 5001,
+  protocol: "https",
+  apiPath: "/api/v0",
+  headers: { authorization: auth },
+});
 
 const getRarityWeight = (_str) => {
   let nameWithoutExtension = _str.slice(0, -4);
@@ -88,30 +93,18 @@ const layersSetup = (layersOrder, layersDir) => {
   return layers;
 };
 
-const saveImage = (_editionCount, saveDir) => {
-  fs.writeFileSync(
-    `${saveDir}/${_editionCount}.png`,
-    canvas.toBuffer("image/png")
-  );
-};
-
 const genColor = () => {
   let hue = Math.floor(Math.random() * 360);
   let pastel = `hsl(${hue}, 100%, ${background.brightness})`;
   return pastel;
 };
 
-const drawBackground = () => {
-  ctx.fillStyle = background.static ? background.default : genColor();
-  ctx.fillRect(0, 0, format.width, format.height);
-};
-
-const addMetadata = (_dna, _edition, attributesList, metadataDir,data) => {
+const addMetadata = (_dna, _edition, attributesList, metadataDir, data,imageUrl) => {
   let dateTime = Date.now();
   let tempMetadata = {
     name: `${data.name} #${_edition}`,
     description: data.description,
-    image: `${baseUri}/${_edition}.png`,
+    image: imageUrl,
     dna: sha1(_dna),
     edition: _edition,
     date: dateTime,
@@ -127,7 +120,7 @@ const addMetadata = (_dna, _edition, attributesList, metadataDir,data) => {
     idNft: _edition,
     data: JSON.stringify(tempMetadata),
   };
-  NftCollectionService.create(dataToSave)
+  NftCollectionService.create(dataToSave);
   attributesList = [];
 };
 
@@ -148,30 +141,6 @@ const loadLayerImg = async (_layer) => {
   } catch (error) {
     console.error("Error loading image:", error);
   }
-};
-
-const addText = (_sig, x, y, size) => {
-};
-
-const drawElement = (_renderObject, _index, _layersLen, attributesList) => {
-  ctx.globalAlpha = _renderObject.layer.opacity;
-  ctx.globalCompositeOperation = _renderObject.layer.blend;
-  text.only
-    ? addText(
-        `${_renderObject.layer.name}${text.spacer}${_renderObject.layer.selectedElement.name}`,
-        text.xGap,
-        text.yGap * (_index + 1),
-        text.size
-      )
-    : ctx.drawImage(
-        _renderObject.loadedImage,
-        0,
-        0,
-        format.width,
-        format.height
-      );
-
-  addAttributes(_renderObject, attributesList);
 };
 
 const constructLayerToDna = (_dna = "", _layers = []) => {
@@ -258,11 +227,6 @@ const createDna = (_layers) => {
   return randNum.join(DNA_DELIMITER);
 };
 
-const writeMetaData = (_data, metadataDir) => {
-  fs.writeFileSync(`${metadataDir}/_metadata.json`, _data);
-};
-
-
 function shuffle(array) {
   let currentIndex = array.length,
     randomIndex;
@@ -290,7 +254,10 @@ const startCreating = async (
   let failedCount = 0;
   let abstractedIndexes = [];
   let attributesList = [];
-  let idCollection = data.idCollection
+
+  const canvas = createCanvas(parseInt(data.width), parseInt(data.height));
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false; // option
 
   for (
     let i = 1;
@@ -322,28 +289,38 @@ const startCreating = async (
           loadedElements.push(loadLayerImg(layer));
         });
 
-        await Promise.all(loadedElements).then((renderObjectArray) => {
-          ctx.clearRect(0, 0, format.width, format.height);
+        await Promise.all(loadedElements).then(async (renderObjectArray) => {
+          ctx.clearRect(0, 0, data.width, data.height);
           if (background.generate) {
-            drawBackground();
+            ctx.fillStyle = background.static ? background.default : genColor();
+            ctx.fillRect(0, 0, data.width, data.height);
           }
           renderObjectArray.forEach((renderObject, index) => {
-            drawElement(
-              renderObject,
-              index,
-              layerConfigParams[layerConfigIndex].layersOrder.length,
-              attributesList
+            ctx.globalAlpha = renderObject.layer.opacity;
+            ctx.globalCompositeOperation = renderObject.layer.blend;
+            ctx.drawImage(
+              renderObject.loadedImage,
+              0,
+              0,
+              data.width,
+              data.height
             );
+
+            addAttributes(renderObject, attributesList);
           });
-          saveImage(abstractedIndexes[0], saveImageDir);
+          const uploadImageIpfs = await client.add(
+            canvas.toBuffer("image/png")
+          );
+          const imageUrl = `https://ipfs.io/ipfs/${uploadImageIpfs.path}`
+
           addMetadata(
             newDna,
             abstractedIndexes[0],
             attributesList,
             saveMetadataDir,
-            data
+            data,
+            imageUrl
           );
-          // saveMetaDataSingleFile(abstractedIndexes[0], saveMetadataDir);
         });
 
         dnaList.add(filterDNAOptions(newDna));

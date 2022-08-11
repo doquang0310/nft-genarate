@@ -7,7 +7,6 @@
     "sourceMap": true,
     "moduleResolution": "node",
     "outDir": "dist",
-    "allowJs": true,
     "typeRoots": ["node_modules/@types"]
   },
   "include": ["typings.d.ts", "server/**/*.ts", "server/common/hashlip/src/main.ts"],
