@@ -5,7 +5,7 @@ const basePath = process.cwd();
 
 const { startCreating } = require(`${basePath}/server/common/hashlip/src/main`);
 
-const exampleData = [
+export const exampleData = [
     {
         name: "Part 1",
         listImage: [
@@ -97,7 +97,7 @@ genNft.process(async (job, done) => {
             growEditionSizeTo: 20,
             layersOrder: layerOrder,
         },
-    ], `${buildDir}/images`, `${buildDir}/json`, layersDir,req.body);
+    ], `${buildDir}/images`, `${buildDir}/json`, layersDir,req.body,buildDir);
 
     await CollectionService.updateStatus(job.data.idCollection,2)
 })
@@ -107,7 +107,7 @@ genNft.on('succeeded', (job, result) => {
 });
 
 
-const setupFolder = (collectionDir, buildDir, layersDir) => {
+export const setupFolder = (collectionDir, buildDir, layersDir) => {
     if (!fs.existsSync(collectionDir)) {
         fs.mkdirSync(collectionDir);
     }
@@ -151,4 +151,5 @@ const setupFolder = (collectionDir, buildDir, layersDir) => {
 export const genNftOrder = (order) => {
     return genNft.createJob(order).save();
 };
+
 

@@ -99,7 +99,14 @@ const genColor = () => {
   return pastel;
 };
 
-const addMetadata = (_dna, _edition, attributesList, metadataDir, data,imageUrl) => {
+const addMetadata = (
+  _dna,
+  _edition,
+  attributesList,
+  metadataDir,
+  data,
+  imageUrl
+) => {
   let dateTime = Date.now();
   let tempMetadata = {
     name: `${data.name} #${_edition}`,
@@ -311,7 +318,7 @@ const startCreating = async (
           const uploadImageIpfs = await client.add(
             canvas.toBuffer("image/png")
           );
-          const imageUrl = `https://ipfs.io/ipfs/${uploadImageIpfs.path}`
+          const imageUrl = `https://ipfs.io/ipfs/${uploadImageIpfs.path}`;
 
           addMetadata(
             newDna,
@@ -337,4 +344,91 @@ const startCreating = async (
   }
 };
 
-module.exports = { startCreating, getElements };
+const startPreview = async (
+  layerConfigParams,
+  layersDir,
+  data,
+  collectionDir
+) => {
+  var dnaList = new Set();
+  let layerConfigIndex = 0;
+  let editionCount = 1;
+  let failedCount = 0;
+  let abstractedIndexes = [];
+  let attributesList = [];
+
+  let base64Image;
+
+  const canvas = createCanvas(parseInt(data.width), parseInt(data.height));
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false; // option
+
+  for (
+    let i = 1;
+    i <= layerConfigParams[layerConfigParams.length - 1].growEditionSizeTo;
+    i++
+  ) {
+    abstractedIndexes.push(i);
+  }
+  if (shuffleLayerConfigurations) {
+    abstractedIndexes = shuffle(abstractedIndexes);
+  }
+  debugLogs
+    ? console.log("Editions left to create: ", abstractedIndexes)
+    : null;
+  while (layerConfigIndex < layerConfigParams.length) {
+    const layers = layersSetup(
+      layerConfigParams[layerConfigIndex].layersOrder,
+      layersDir
+    );
+    while (
+      editionCount <= layerConfigParams[layerConfigIndex].growEditionSizeTo
+    ) {
+      let newDna = createDna(layers);
+      if (isDnaUnique(dnaList, newDna)) {
+        let results = constructLayerToDna(newDna, layers);
+        let loadedElements = [];
+
+        results.forEach((layer) => {
+          loadedElements.push(loadLayerImg(layer));
+        });
+
+        await Promise.all(loadedElements).then(async (renderObjectArray) => {
+          ctx.clearRect(0, 0, data.width, data.height);
+          if (background.generate) {
+            ctx.fillStyle = background.static ? background.default : genColor();
+            ctx.fillRect(0, 0, data.width, data.height);
+          }
+          renderObjectArray.forEach((renderObject, index) => {
+            ctx.globalAlpha = renderObject.layer.opacity;
+            ctx.globalCompositeOperation = renderObject.layer.blend;
+            ctx.drawImage(
+              renderObject.loadedImage,
+              0,
+              0,
+              data.width,
+              data.height
+            );
+
+            addAttributes(renderObject, attributesList);
+          });
+          fs.rmdirSync(collectionDir, { recursive: true });
+          base64Image =  canvas.toDataURL('image/png');
+        });
+
+        dnaList.add(filterDNAOptions(newDna));
+        editionCount++;
+        abstractedIndexes.shift();
+      } else {
+        failedCount++;
+        if (failedCount >= uniqueDnaTorrance) {
+          break;
+        }
+      }
+    }
+    layerConfigIndex++;
+  }
+  return base64Image;
+};
+
+module.exports = { startCreating, startPreview, getElements };

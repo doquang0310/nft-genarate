@@ -50,37 +50,14 @@ export class Controller {
         listNft.push(await NftService.getByIdCollection(req.body.idCollection))
       } else {
         res.status(202).json({
-          status : 200,
-          code : 3,
-          message: "Chua hoan thanh",
+          status : 2,
+          message: "In process",
         })
       }
       res.json({
-        status : 200,
-        code : 1,
+        status : 3,
         message: "Successfully",
         data : listNft,
-      })
-    } catch (err) {
-      return next(err);
-    }
-  }
-
-  async checkStatusCollection(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (!req.body.idCollection) {
-        res.status(202).json({
-          status : 200,
-          code : 2,
-          message : "missing id collection"
-        })
-      }
-      const data = await CollectionService.getById(req.body.idCollection);
-      res.json({
-        status : 200,
-        code : 1,
-        message: "Successfully",
-        data : data
       })
     } catch (err) {
       return next(err);
