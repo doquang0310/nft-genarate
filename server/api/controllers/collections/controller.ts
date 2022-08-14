@@ -39,8 +39,6 @@ export class Controller {
     try {
       if (!req.body.idCollection) {
         res.status(202).json({
-          status : 200,
-          code : 2,
           message : "missing id collection"
         })
       }

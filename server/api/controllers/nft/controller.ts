@@ -18,7 +18,7 @@ export class Controller {
       let layerOrder = [];
 
       setupFolder(collectionDir, buildDir, layersDir);
-      exampleData.map(async (item, index) => {
+      req.body.layoutOrder.map(async (item, index) => {
         layerOrder.push({ name: item.name });
         if (fs.existsSync(`${layersDir}/${item.name}`)) {
           fs.rmdirSync(
