@@ -5,7 +5,6 @@ const basePath = process.cwd();
 
 const { startCreating } = require(`${basePath}/server/common/hashlip/src/main`);
 
-
 const options = {
   removeOnSuccess: false,
 };
@@ -52,7 +51,7 @@ genNft.process(async (job, done) => {
   startCreating(
     [
       {
-        growEditionSizeTo: 20,
+        growEditionSizeTo: req.body.totalImage,
         layersOrder: layerOrder,
       },
     ],
