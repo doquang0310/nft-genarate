@@ -34,7 +34,7 @@ export class Controller {
           } else {
             fs.mkdirSync(`${layersDir}/${item.name}`);
           }
-          if (item.listImage.length > 0) {
+          if (typeof item.listImage == 'object' && item.listImage.length > 0) {
             Promise.all(
               item.listImage.map((element, index) => {
                 const base64Data = element.replace(
