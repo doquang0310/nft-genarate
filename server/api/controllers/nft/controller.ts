@@ -1,7 +1,5 @@
 const basePath = process.cwd();
 import { Request, Response, NextFunction } from "express";
-
-import ExamplesService from "../../services/nft.service";
 import { setupFolder } from "../../../queue/nftGen";
 
 const { startPreview } = require(`${basePath}/server/common/hashlip/src/main`);
@@ -36,29 +34,33 @@ export class Controller {
           } else {
             fs.mkdirSync(`${layersDir}/${item.name}`);
           }
-          Promise.all(
-            item.listImage.map((element, index) => {
-              const base64Data = element.replace(
-                /^data:image\/png;base64,/,
-                ""
-              );
-              const base64regex =
-                /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
-              if (base64regex.test(base64Data) == true) {
-                fs.writeFileSync(
-                  `${layersDir}/${item.name}/${index}.png`,
-                  base64Data,
-                  "base64",
-                  (err) => {
-                    if (err) console.log("errSaveImage", err);
-                    console.log("Saved!");
-                  }
+          if (item.listImage.length > 0) {
+            Promise.all(
+              item.listImage.map((element, index) => {
+                const base64Data = element.replace(
+                  /^data:image\/png;base64,/,
+                  ""
                 );
-              } else {
-                flagError.push(`Not base64 format : ${item.name} - ${index}`);
-              }
-            })
-          );
+                const base64regex =
+                  /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+                if (base64regex.test(base64Data) == true) {
+                  fs.writeFileSync(
+                    `${layersDir}/${item.name}/${index}.png`,
+                    base64Data,
+                    "base64",
+                    (err) => {
+                      if (err) console.log("errSaveImage", err);
+                      console.log("Saved!");
+                    }
+                  );
+                } else {
+                  flagError.push(`Not base64 format : ${item.name} - ${index}`);
+                }
+              })
+            );
+          } else {
+            flagError.push(`List Image Null : ${item.name}`);
+          }
         });
         if (flagError.length == 0) {
           const base64Image = await startPreview(
@@ -76,12 +78,12 @@ export class Controller {
             image: base64Image,
           });
         } else {
-          res.json({
-            error : flagError,
+          res.status(202).json({
+            error: flagError,
           });
         }
       } else {
-        res.json({
+        res.status(202).json({
           error: "The data is not in the correct format",
         });
       }
