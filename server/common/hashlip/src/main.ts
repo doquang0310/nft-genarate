@@ -301,10 +301,10 @@ const startCreating = async (
 
         await Promise.all(loadedElements).then(async (renderObjectArray) => {
           ctx.clearRect(0, 0, data.width, data.height);
-          if (background.generate) {
-            ctx.fillStyle = background.static ? background.default : genColor();
-            ctx.fillRect(0, 0, data.width, data.height);
-          }
+          // if (background.generate) {
+          //   ctx.fillStyle = background.static ? background.default : genColor();
+          //   ctx.fillRect(0, 0, data.width, data.height);
+          // }
           renderObjectArray.forEach((renderObject, index) => {
             ctx.globalAlpha = renderObject.layer.opacity;
             ctx.globalCompositeOperation = renderObject.layer.blend;
@@ -395,10 +395,10 @@ const startPreview = async (
 
         await Promise.all(loadedElements).then(async (renderObjectArray) => {
           ctx.clearRect(0, 0, data.width, data.height);
-          if (background.generate) {
-            ctx.fillStyle = background.static ? background.default : genColor();
-            ctx.fillRect(0, 0, data.width, data.height);
-          }
+          // if (background.generate) {
+          //   ctx.fillStyle = background.static ? background.default : genColor();
+          //   ctx.fillRect(0, 0, data.width, data.height);
+          // }
           renderObjectArray.forEach((renderObject, index) => {
             ctx.globalAlpha = renderObject.layer.opacity;
             ctx.globalCompositeOperation = renderObject.layer.blend;
