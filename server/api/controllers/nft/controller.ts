@@ -16,6 +16,7 @@ export class Controller {
       const layersDir = `${basePath}/storage/${randomString}/layers`;
 
       let layerOrder = [];
+      let flagError = [];
 
       setupFolder(collectionDir, buildDir, layersDir);
       req.body.layoutOrder.map(async (item, indexLayout) => {
@@ -34,33 +35,46 @@ export class Controller {
         }
         Promise.all(
           item.listImage.map((element, index) => {
-            var base64Data = element.replace(/^data:image\/png;base64,/, "");
-            fs.writeFileSync(
-              `${layersDir}/${item.name}/${index}.png`,
-              base64Data,
-              "base64",
-              (err) => {
-                if (err) console.log("errSaveImage", err);
-                console.log("Saved!");
-              }
-            );
+            const base64Data = element.replace(/^data:image\/png;base64,/, "");
+            const base64regex =
+              /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+            if (base64regex.test(base64Data) == true) {
+              console.log("?????");
+              fs.writeFileSync(
+                `${layersDir}/${item.name}/${index}.png`,
+                base64Data,
+                "base64",
+                (err) => {
+                  if (err) console.log("errSaveImage", err);
+                  console.log("Saved!");
+                }
+              );
+            } else {
+              flagError.push(`Not base64 format : ${item.name} - ${index}`);
+            }
           })
         );
       });
-      const base64Image = await startPreview(
-        [
-          {
-            growEditionSizeTo: 10,
-            layersOrder: layerOrder,
-          },
-        ],
-        layersDir,
-        req.body,
-        collectionDir
-      );
-      res.status(200).json({
-        image: base64Image,
-      });
+      if (flagError.length == 0) {
+        const base64Image = await startPreview(
+          [
+            {
+              growEditionSizeTo: 10,
+              layersOrder: layerOrder,
+            },
+          ],
+          layersDir,
+          req.body,
+          collectionDir
+        );
+        res.status(200).json({
+          image: base64Image,
+        });
+      } else {
+        res.status(202).json({
+          error : flagError
+        })
+      }
     } catch (err) {
       return next(err);
     }
