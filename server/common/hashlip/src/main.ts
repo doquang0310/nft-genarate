@@ -202,6 +202,9 @@ const filterDNAOptions = (_dna) => {
  */
 const removeQueryStrings = (_dna) => {
   const query = /(\?.*$)/;
+  if (_dna == undefined) {
+    _dna = "";
+  }
   return _dna.replace(query, "");
 };
 
@@ -373,9 +376,6 @@ const startPreview = async (
   if (shuffleLayerConfigurations) {
     abstractedIndexes = shuffle(abstractedIndexes);
   }
-  debugLogs
-    ? console.log("Editions left to create: ", abstractedIndexes)
-    : null;
   while (layerConfigIndex < layerConfigParams.length) {
     const layers = layersSetup(
       layerConfigParams[layerConfigIndex].layersOrder,
