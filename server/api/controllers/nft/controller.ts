@@ -34,8 +34,6 @@ export class Controller {
           } else {
             fs.mkdirSync(`${layersDir}/${item.name}`);
           }
-          console.log('type of list image',typeof item.listImage)
-          console.log('data list image', item.listImage)
 
           if (typeof item.listImage == "object" && item.listImage.length > 0) {
             Promise.all(
