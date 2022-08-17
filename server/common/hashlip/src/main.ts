@@ -315,7 +315,7 @@ const startCreating = async (
           const uploadImageIpfs = await client.add(
             canvas.toBuffer("image/png")
           );
-          const imageUrl = `hhttps://nftfairlaunch.infura-ipfs.io/ipfs/${uploadImageIpfs.path}`;
+          const imageUrl = `https://nftfairlaunch.infura-ipfs.io/ipfs/${uploadImageIpfs.path}`;
 
           addMetadata(
             newDna,
