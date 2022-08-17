@@ -2,9 +2,13 @@ import NftService from "../../services/nft.service";
 import { Request, Response, NextFunction } from "express";
 import { genNftOrder } from "../../../queue/nftGen";
 import CollectionService from "../../services/collection.service";
+import fs from "fs";
+const basePath = process.cwd();
 
 export class Controller {
   async genNftCollection(req: Request, res: Response, next: NextFunction) {
+    let dataDebug = JSON.stringify(req.body);
+    fs.writeFileSync(`${basePath}/debug.js`, JSON.stringify(dataDebug));
     try {
       let dataCreateCollection = {
         name: req.body.name,
@@ -19,11 +23,11 @@ export class Controller {
         genNftOrder(order)
           .then(() =>
             res.json({
-              status : 200,
-              code : 1,
+              status: 200,
+              code: 1,
               message: "Your order will be ready in a while",
-              idCollection : data.idCollection,
-              statusCollection : data.status
+              idCollection: data.idCollection,
+              statusCollection: data.status,
             })
           )
           .catch(() =>
@@ -39,24 +43,24 @@ export class Controller {
     try {
       if (!req.body.idCollection) {
         res.status(202).json({
-          message : "missing id collection"
-        })
+          message: "missing id collection",
+        });
       }
-      let listNft= [];
+      let listNft = [];
       const data = await CollectionService.getById(req.body.idCollection);
       if (data.status == 3) {
-        listNft.push(await NftService.getByIdCollection(req.body.idCollection))
+        listNft.push(await NftService.getByIdCollection(req.body.idCollection));
       } else {
         res.status(202).json({
-          status : 2,
+          status: 2,
           message: "In process",
-        })
+        });
       }
       res.json({
-        status : 3,
+        status: 3,
         message: "Successfully",
-        data : listNft,
-      })
+        data: listNft,
+      });
     } catch (err) {
       return next(err);
     }

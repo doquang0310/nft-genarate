@@ -319,7 +319,7 @@ const startCreating = async (
           const uploadImageIpfs = await client.add(
             canvas.toBuffer("image/png")
           );
-          const imageUrl = `https://ipfs.io/ipfs/${uploadImageIpfs.path}`;
+          const imageUrl = `https://mygateway.mypinata.cloud/ipfs/${uploadImageIpfs.path}`;
 
           addMetadata(
             newDna,

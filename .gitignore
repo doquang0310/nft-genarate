@@ -13,3 +13,5 @@ node_modules
 test/test-results.xml
 
 storage
+
+debug.js
