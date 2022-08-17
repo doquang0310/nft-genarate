@@ -119,17 +119,12 @@ const addMetadata = (
     ...extraMetadata,
     attributes: attributesList,
   };
-  fs.writeFileSync(
-    `${metadataDir}/${_edition}.json`,
-    JSON.stringify(tempMetadata, null, 2)
-  );
   let dataToSave = {
     idCollections: idCollection,
     idNft: _edition,
     data: JSON.stringify(tempMetadata),
   };
   NftCollectionService.create(dataToSave);
-  attributesList = [];
 };
 
 const addAttributes = (_element, attributesList) => {
@@ -331,6 +326,7 @@ const startCreating = async (
             imageUrl,
             idCollection
           );
+          attributesList = [];
         });
 
         dnaList.add(filterDNAOptions(newDna));
