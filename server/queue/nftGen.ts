@@ -64,7 +64,7 @@ genNft.process(async (job, done) => {
       await startCreating(
         [
           {
-            growEditionSizeTo: 100,
+            growEditionSizeTo: req.body.totalImage,
             layersOrder: layerOrder,
           },
         ],

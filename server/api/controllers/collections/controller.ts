@@ -41,12 +41,12 @@ export class Controller {
           message: "missing id collection",
         });
       }
-      let listNft = [];
+      let listNft;
       const data = await CollectionService.getById(req.body.idCollection);
       if (data.status == 3) {
         const allData = await NftService.getByIdCollection(req.body.idCollection)
         if (allData.length > 0)
-          listNft.push(allData);
+          listNft = allData;
       } else {
         res.status(202).json({
           status: 2,
