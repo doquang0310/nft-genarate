@@ -4,6 +4,7 @@ import sequence from "mongoose-sequence";
 const AutoIncrement = sequence(mongoose);
 
 export interface NftModel extends mongoose.Document {
+  length: any;
   idCollections: number;
   idNft: any;
   data: string;

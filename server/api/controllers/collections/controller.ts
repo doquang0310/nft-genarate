@@ -2,13 +2,8 @@ import NftService from "../../services/nft.service";
 import { Request, Response, NextFunction } from "express";
 import { genNftOrder } from "../../../queue/nftGen";
 import CollectionService from "../../services/collection.service";
-import fs from "fs";
-const basePath = process.cwd();
-
 export class Controller {
   async genNftCollection(req: Request, res: Response, next: NextFunction) {
-    let dataDebug = JSON.stringify(req.body);
-    fs.writeFileSync(`${basePath}/debug.js`, JSON.stringify(dataDebug));
     try {
       let dataCreateCollection = {
         name: req.body.name,
@@ -49,7 +44,9 @@ export class Controller {
       let listNft = [];
       const data = await CollectionService.getById(req.body.idCollection);
       if (data.status == 3) {
-        listNft.push(await NftService.getByIdCollection(req.body.idCollection));
+        const allData = await NftService.getByIdCollection(req.body.idCollection)
+        if (allData.length > 0)
+          listNft.push(allData);
       } else {
         res.status(202).json({
           status: 2,
@@ -59,7 +56,7 @@ export class Controller {
       res.json({
         status: 3,
         message: "Successfully",
-        data: listNft,
+        data: listNft.length > 0 ? listNft : null,
       });
     } catch (err) {
       return next(err);

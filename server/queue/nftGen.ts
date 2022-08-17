@@ -44,7 +44,7 @@ genNft.process(async (job, done) => {
               /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
             if (base64regex.test(base64Data) == true) {
               fs.writeFileSync(
-                `${layersDir}/${item.name}/${index}.png`,
+                `${layersDir}/${item.name}/${Math.floor(Math.random() * 1000000)}${index}.png`,
                 base64Data,
                 "base64",
                 (err) => {
@@ -61,10 +61,10 @@ genNft.process(async (job, done) => {
       }
     });
     if (flagError.length == 0) {
-      startCreating(
+      await startCreating(
         [
           {
-            growEditionSizeTo: req.body.totalImage,
+            growEditionSizeTo: 100,
             layersOrder: layerOrder,
           },
         ],
@@ -73,7 +73,7 @@ genNft.process(async (job, done) => {
         req.body,
         req.idCollection
       );
-      await CollectionService.updateStatus(job.data.idCollection, 2);
+      await CollectionService.updateStatus(job.data.idCollection, 2); 
     } else {
       await CollectionService.updateStatus(job.data.idCollection, 4);
     }

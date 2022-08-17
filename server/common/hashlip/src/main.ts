@@ -285,6 +285,7 @@ const startCreating = async (
       layerConfigParams[layerConfigIndex].layersOrder,
       layersDir
     );
+
     while (
       editionCount <= layerConfigParams[layerConfigIndex].growEditionSizeTo
     ) {
