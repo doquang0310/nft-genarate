@@ -105,7 +105,8 @@ const addMetadata = (
   attributesList,
   metadataDir,
   data,
-  imageUrl
+  imageUrl,
+  idCollection
 ) => {
   let dateTime = Date.now();
   let tempMetadata = {
@@ -123,7 +124,7 @@ const addMetadata = (
     JSON.stringify(tempMetadata, null, 2)
   );
   let dataToSave = {
-    idCollections: data.idCollection,
+    idCollections: idCollection,
     idNft: _edition,
     data: JSON.stringify(tempMetadata),
   };
@@ -253,10 +254,10 @@ function shuffle(array) {
 
 const startCreating = async (
   layerConfigParams,
-  saveImageDir,
   saveMetadataDir,
   layersDir,
-  data
+  data,
+  idCollection
 ) => {
   var dnaList = new Set();
   let layerConfigIndex = 0;
@@ -279,9 +280,6 @@ const startCreating = async (
   if (shuffleLayerConfigurations) {
     abstractedIndexes = shuffle(abstractedIndexes);
   }
-  debugLogs
-    ? console.log("Editions left to create: ", abstractedIndexes)
-    : null;
   while (layerConfigIndex < layerConfigParams.length) {
     const layers = layersSetup(
       layerConfigParams[layerConfigIndex].layersOrder,
@@ -329,7 +327,8 @@ const startCreating = async (
             attributesList,
             saveMetadataDir,
             data,
-            imageUrl
+            imageUrl,
+            idCollection
           );
         });
 

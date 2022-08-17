@@ -50,8 +50,7 @@ export class Controller {
                     base64Data,
                     "base64",
                     (err) => {
-                      if (err) console.log("errSaveImage", err);
-                      console.log("Saved!");
+                      if (err) flagError.push(`Error save Image : ${err}`);
                     }
                   );
                 } else {

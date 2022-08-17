@@ -21,7 +21,7 @@ genNft.process(async (job, done) => {
   let flagError = [];
 
   if (typeof req.body.layoutOrder == "object") {
-    setupFolder(collectionDir, buildDir, layersDir);
+    await setupFolder(collectionDir, buildDir, layersDir);
     req.body.layoutOrder.map(async (item, index) => {
       layerOrder.push({ name: item.name });
       if (fs.existsSync(`${layersDir}/${item.name}`)) {
@@ -48,8 +48,7 @@ genNft.process(async (job, done) => {
                 base64Data,
                 "base64",
                 (err) => {
-                  if (err) console.log("errSaveImage", err);
-                  console.log("Saved!");
+                  if (err) flagError.push("errSaveImage", err);
                 }
               );
             } else {
@@ -69,13 +68,11 @@ genNft.process(async (job, done) => {
             layersOrder: layerOrder,
           },
         ],
-        `${buildDir}/images`,
         `${buildDir}/json`,
         layersDir,
         req.body,
-        buildDir
+        req.idCollection
       );
-
       await CollectionService.updateStatus(job.data.idCollection, 2);
     } else {
       await CollectionService.updateStatus(job.data.idCollection, 4);
@@ -86,6 +83,9 @@ genNft.process(async (job, done) => {
 });
 
 genNft.on("succeeded", (job, result) => {
+//   const req = job.data;
+//   const collectionDir = `${basePath}/storage/${req.idCollection}`;
+//   fs.rmdirSync(collectionDir, { recursive: true })
   CollectionService.updateStatus(job.data.idCollection, 3);
 });
 
@@ -93,7 +93,7 @@ genNft.on('failed', (job, err) => {
     console.log(`Job ${job.id} failed with error ${err.message}`);
 });
 
-export const setupFolder = (collectionDir, buildDir, layersDir) => {
+export const setupFolder = async (collectionDir, buildDir, layersDir) => {
   if (!fs.existsSync(collectionDir)) {
     fs.mkdirSync(collectionDir);
   }
